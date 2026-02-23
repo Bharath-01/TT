@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OPTIMA Visual Dashboard — IIM Ranchi MBA Timetable</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1A2744;--navy2:#0F1923;--navy3:#243356;
+  --gold:#B45309;--gold2:#F5C842;--gold3:#FEF3C7;
+  --blue:#1D4ED8;--blue2:#3B82F6;--blue3:#93C5FD;--blue4:#DBEAFE;
+  --purple:#6D28D9;--purple2:#8B5CF6;--purple3:#C4B5FD;--purple4:#EDE9FE;
+  --green:#065F46;--green2:#059669;--green3:#D1FAE5;
+  --amber:#D97706;--amber2:#FEF3C7;
+  --red:#DC2626;--red2:#FEE2E2;
+  --paper:#F7F3EC;--cream:#EDE8DF;--rule:#C8BFAF;--ink:#0F1923;
+  --white:#FFFFFF;
+}
+
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--navy2);color:var(--white);min-height:100vh;overflow-x:hidden}
+
+/* HERO */
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+  background:linear-gradient(160deg,var(--navy2) 0%,#1a1040 40%,var(--navy) 100%);
+  position:relative;overflow:hidden;padding:60px 60px 80px;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 70% 40%, rgba(109,40,217,.15) 0%, transparent 70%),
+             radial-gradient(ellipse 50% 40% at 20% 70%, rgba(29,78,216,.12) 0%, transparent 60%);
+}
+.hero-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+  background-size:60px 60px;
+}
+.hero-inner{position:relative;z-index:2;max-width:1200px;margin:0 auto;width:100%}
+.hero-kicker{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold2);margin-bottom:16px;opacity:.8}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,8vw,120px);line-height:.9;letter-spacing:.02em;margin-bottom:20px}
+.hero-title .line1{color:var(--white)}
+.hero-title .line2{color:var(--gold2)}
+.hero-title .line3{color:var(--blue3);font-size:60%;letter-spacing:.08em}
+.hero-desc{font-size:15px;color:rgba(255,255,255,.55);max-width:600px;line-height:1.7;margin-bottom:40px;font-weight:300}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;max-width:800px}
+.hero-stat{border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:20px;background:rgba(255,255,255,.04);backdrop-filter:blur(10px)}
+.hero-stat-num{font-family:'Bebas Neue',sans-serif;font-size:46px;line-height:1;color:var(--gold2)}
+.hero-stat-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:6px}
+.hero-scroll{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3);display:flex;flex-direction:column;align-items:center;gap:8px}
+.hero-scroll::after{content:'';width:1px;height:40px;background:linear-gradient(rgba(255,255,255,.3),transparent)}
+
+/* SECTION WRAPPER */
+.section{padding:80px 60px;max-width:1300px;margin:0 auto}
+.section-bg-light{background:var(--paper);color:var(--ink)}
+.section-bg-dark{background:var(--navy);color:var(--white)}
+.section-bg-mid{background:var(--navy2);color:var(--white)}
+
+.sec-eyebrow{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.sec-title{font-family:'DM Serif Display',serif;font-size:clamp(32px,4vw,52px);line-height:1.1;margin-bottom:16px}
+.sec-body{font-size:14px;line-height:1.8;max-width:700px;opacity:.75;margin-bottom:40px}
+
+/* FULL-WIDTH SECTION WRAPPERS */
+.full-sec{width:100%;padding:80px 0}
+.full-sec .inner{max-width:1300px;margin:0 auto;padding:0 60px}
+
+/* COMPARISON HERO CARDS */
+.sol-compare{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin:0 0 60px}
+.sol-card{padding:40px;position:relative;overflow:hidden}
+.sol-card-a{background:linear-gradient(135deg,#0c2461,#1D4ED8)}
+.sol-card-b{background:linear-gradient(135deg,#2d1b69,#6D28D9)}
+.sol-card::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;border:1px solid rgba(255,255,255,.08)}
+.sol-card::after{content:'';position:absolute;top:-80px;right:-80px;width:300px;height:300px;border-radius:50%;border:1px solid rgba(255,255,255,.04)}
+.sol-tag{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:8px}
+.sol-name{font-family:'Bebas Neue',sans-serif;font-size:56px;line-height:1;color:#fff;margin-bottom:16px}
+.sol-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;position:relative;z-index:2}
+.sol-metric{background:rgba(0,0,0,.2);border-radius:8px;padding:14px}
+.sol-metric-num{font-family:'Bebas Neue',sans-serif;font-size:32px;line-height:1;color:var(--gold2)}
+.sol-metric-label{font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-top:4px}
+
+/* CHARTS */
+.charts-grid{display:grid;gap:24px;margin-bottom:40px}
+.charts-2col{grid-template-columns:1fr 1fr}
+.charts-3col{grid-template-columns:1fr 1fr 1fr}
+.chart-card{background:#fff;border-radius:12px;padding:28px;box-shadow:0 2px 20px rgba(0,0,0,.06);color:var(--ink)}
+.chart-card.dark{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:var(--white)}
+.chart-title{font-family:'DM Serif Display',serif;font-size:17px;margin-bottom:4px}
+.chart-sub{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--rule);margin-bottom:20px}
+.chart-card.dark .chart-sub{color:rgba(255,255,255,.35)}
+
+/* BAR CHART */
+.bar-chart{display:flex;flex-direction:column;gap:8px}
+.bar-row{display:flex;align-items:center;gap:10px}
+.bar-label{font-family:'JetBrains Mono',monospace;font-size:10px;width:110px;flex-shrink:0;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+.bar-label.light{color:rgba(255,255,255,.7)}
+.bar-track{flex:1;height:22px;background:var(--cream);border-radius:4px;overflow:hidden;position:relative}
+.bar-track.dark-track{background:rgba(255,255,255,.08)}
+.bar-fill{height:100%;border-radius:4px;transition:width .6s ease;display:flex;align-items:center;padding-left:8px}
+.bar-val{font-family:'JetBrains Mono',monospace;font-size:10px;color:#fff;font-weight:700;white-space:nowrap}
+
+/* DONUT */
+.donut-wrap{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.donut-svg{flex-shrink:0}
+.donut-legend{display:flex;flex-direction:column;gap:10px}
+.donut-item{display:flex;align-items:center;gap:10px}
+.donut-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.donut-item-label{font-size:12px;}
+.donut-item-val{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;margin-left:auto;padding-left:12px}
+
+/* WEEK SPARK */
+.spark-row{display:flex;gap:6px;align-items:flex-end;height:80px;padding-top:10px}
+.spark-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.spark-bar{width:100%;border-radius:3px 3px 0 0;transition:height .4s ease;min-height:4px}
+.spark-label{font-family:'JetBrains Mono',monospace;font-size:8px;color:rgba(255,255,255,.4);text-align:center}
+.spark-val{font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.6);text-align:center}
+
+/* CLIQUE VIZ */
+.clique-grid{display:flex;flex-wrap:wrap;gap:8px}
+.clique-tag{padding:6px 14px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.06em}
+.clique-member{background:var(--purple4);color:var(--purple);border:1.5px solid var(--purple3)}
+.clique-normal{background:var(--blue4);color:var(--blue);border:1.5px solid var(--blue3)}
+
+/* INFEASIBILITY PROOF */
+.proof-steps{display:grid;gap:16px}
+.proof-step{display:flex;gap:16px;padding:20px;background:rgba(255,255,255,.04);border-radius:10px;border-left:3px solid var(--gold)}
+.proof-num{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--gold2);line-height:1;flex-shrink:0}
+.proof-text{font-size:13px;line-height:1.7;color:rgba(255,255,255,.75)}
+.proof-text strong{color:var(--white)}
+.proof-formula{font-family:'JetBrains Mono',monospace;font-size:13px;background:rgba(0,0,0,.3);padding:8px 14px;border-radius:6px;margin-top:8px;color:var(--gold2)}
+
+/* FACULTY HEATMAP */
+.fac-heat{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.fac-row{display:flex;align-items:center;gap:10px;padding:12px 16px;background:rgba(255,255,255,.04);border-radius:8px;border:1px solid rgba(255,255,255,.06)}
+.fac-row.critical{border-color:rgba(245,200,66,.3);background:rgba(180,83,9,.1)}
+.fac-row.overflow{border-color:rgba(196,181,253,.3);background:rgba(109,40,217,.1)}
+.fac-name{font-size:12px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fac-bar-mini{width:60px;height:8px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden;flex-shrink:0}
+.fac-bar-fill{height:100%;border-radius:4px}
+.fac-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold2);width:28px;text-align:right;flex-shrink:0}
+
+/* TIMELINE */
+.timeline{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-bottom:20px}
+.tl-week{border-radius:6px;padding:12px 8px;text-align:center}
+.tl-week.ph1{background:linear-gradient(to bottom, #1D4ED8, #2563EB)}
+.tl-week.ph2{background:linear-gradient(to bottom, #D97706, #B45309)}
+.tl-week-num{font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.6);margin-bottom:4px}
+.tl-week-val{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff;line-height:1}
+.tl-week-sub{font-size:8px;color:rgba(255,255,255,.45);margin-top:2px}
+.tl-legend{display:flex;gap:16px;margin-top:12px}
+.tl-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+
+/* NAV */
+.top-nav{position:sticky;top:0;z-index:100;background:rgba(15,25,35,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.08);padding:12px 60px}
+.nav-inner{max-width:1300px;margin:0 auto;display:flex;align-items:center;gap:24px}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.06em;color:var(--gold2);flex-shrink:0}
+.nav-links{display:flex;gap:4px;flex-wrap:wrap}
+.nav-link{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:6px 12px;border-radius:5px;color:rgba(255,255,255,.5);cursor:pointer;transition:all .15s;text-decoration:none;border:none;background:none}
+.nav-link:hover{color:#fff;background:rgba(255,255,255,.06)}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .hero-stats{grid-template-columns:repeat(2,1fr)}
+  .sol-compare{grid-template-columns:1fr}
+  .charts-2col,.charts-3col{grid-template-columns:1fr}
+  .hero,.section,.full-sec .inner{padding:40px 20px}
+  .top-nav{padding:12px 20px}
+}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeUp .5s ease both}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="top-nav">
+  <div class="nav-inner">
+    <span class="nav-logo">OPTIMA</span>
+    <div class="nav-links">
+      <a class="nav-link" href="#overview">Overview</a>
+      <a class="nav-link" href="#solutions">Solutions</a>
+      <a class="nav-link" href="#sessions">Sessions</a>
+      <a class="nav-link" href="#infeasibility">Infeasibility</a>
+      <a class="nav-link" href="#clique">Clique</a>
+      <a class="nav-link" href="#faculty">Faculty</a>
+      <a class="nav-link" href="#weekly">Weekly</a>
+      <a class="nav-link" href="#slots">Slots</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="overview">
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="hero-kicker">IIM Ranchi · MBA Elective Term · WAI Assignment · OPTIMA v8</div>
+    <div class="hero-title">
+      <div class="line1">OPTIMA</div>
+      <div class="line2">TIMETABLE</div>
+      <div class="line3">Optimized Programmatic Timetabling for MBA Academics</div>
+    </div>
+    <p class="hero-desc">A CP-SAT and Goal Programming framework that schedules 47 sections, 25 faculty, and 2,600+ students across a 10-week MBA elective term — resolving a mathematically proven infeasibility in the process.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-num">27</div><div class="hero-stat-label">Elective Courses</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">47</div><div class="hero-stat-label">Schedulable Sections</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">773</div><div class="hero-stat-label">Conflict Pairs</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">71.5%</div><div class="hero-stat-label">Conflict Density</div></div>
+    </div>
+  </div>
+  <div class="hero-scroll">Scroll to explore ↓</div>
+</section>
+
+<!-- SOLUTIONS COMPARE -->
+<div id="solutions" style="background:var(--navy2);padding:0">
+  <div class="sol-compare" style="max-width:100%;gap:0">
+    <div class="sol-card sol-card-a">
+      <div class="sol-tag">Solution A · v6 · Feasibility-First</div>
+      <div class="sol-name">18 SESSIONS</div>
+      <div class="sol-metrics">
+        <div class="sol-metric"><div class="sol-metric-num">846</div><div class="sol-metric-label">Total Sessions</div></div>
+        <div class="sol-metric"><div class="sol-metric-num">27h</div><div class="sol-metric-label">Contact Hrs</div></div>
+        <div class="sol-metric"><div class="sol-metric-num" style="color:#4ADE80">0</div><div class="sol-metric-label">Overflow</div></div>
+        <div class="sol-metric"><div class="sol-metric-num">28.9%</div><div class="sol-metric-label">P2 Utilisation</div></div>
+        <div class="sol-metric"><div class="sol-metric-num">100%</div><div class="sol-metric-label">Normal Hours</div></div>
+        <div class="sol-metric"><div class="sol-metric-num">&gt;85%</div><div class="sol-metric-label">Robustness</div></div>
+      </div>
+    </div>
+    <div class="sol-card sol-card-b">
+      <div class="sol-tag">Solution B · v8 · Preferred · Full-Term</div>
+      <div class="sol-name">20 SESSIONS</div>
+      <div class="sol-metrics">
+        <div class="sol-metric"><div class="sol-metric-num">940</div><div class="sol-metric-label">Total Sessions</div></div>
+        <div class="sol-metric"><div class="sol-metric-num">30h</div><div class="sol-metric-label">Contact Hrs</div></div>
+        <div class="sol-metric"><div class="sol-metric-num" style="color:#F87171">17</div><div class="sol-metric-label">Overflow</div></div>
+        <div class="sol-metric"><div class="sol-metric-num">34%</div><div class="sol-metric-label">P2 Utilisation</div></div>
+        <div class="sol-metric"><div class="sol-metric-num">98.2%</div><div class="sol-metric-label">Normal Hours</div></div>
+        <div class="sol-metric"><div class="sol-metric-num">&gt;85%</div><div class="sol-metric-label">Robustness</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ENROLLMENT & SESSIONS SECTION -->
+<div id="sessions" style="background:#F7F3EC;padding:60px 0">
+  <div style="max-width:1300px;margin:0 auto;padding:0 60px">
+    <div class="sec-eyebrow">Data Foundation</div>
+    <h2 class="sec-title" style="color:var(--navy)">Enrollment &amp; Section Distribution</h2>
+    <p class="sec-body">18 of 27 courses (66.7%) exceed the 70-student classroom capacity, requiring alphabetical section splits. This expands 27 courses into 47 schedulable sections and generates 773 conflict pairs — driving the scheduling complexity.</p>
+    <div class="charts-grid charts-2col">
+      <div class="chart-card">
+        <div class="chart-title">Top 15 Courses by Enrollment</div>
+        <div class="chart-sub">Red = requires section split (&gt;70 students)</div>
+        <div class="bar-chart" id="enrollChart"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Section Split Analysis</div>
+        <div class="chart-sub">Capacity threshold = 70 students per classroom</div>
+        <div class="donut-wrap" id="splitDonut" style="justify-content:center;padding-top:10px"></div>
+        <div style="margin-top:28px">
+          <div class="chart-sub" style="margin-bottom:12px">Key Structural Facts</div>
+          <div style="display:grid;gap:10px" id="keyFacts"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- INFEASIBILITY PROOF -->
+<div id="infeasibility" style="background:var(--navy);padding:60px 0">
+  <div style="max-width:1300px;margin:0 auto;padding:0 60px">
+    <div class="sec-eyebrow" style="color:var(--gold2)">Mathematical Discovery</div>
+    <h2 class="sec-title">The Infeasibility Proof</h2>
+    <p class="sec-body">The scheduling problem is mathematically proven to be infeasible at 20 sessions per course under normal hours. This is not a solver failure — it is a structural impossibility arising from the conflict graph.</p>
+    <div class="proof-steps">
+      <div class="proof-step">
+        <div class="proof-num">1</div>
+        <div class="proof-text">
+          <strong>The conflict graph has 773 edges across 47 nodes</strong> — a density of 71.5%. Students from BA-24, IPM-21, and H-24 batches all select from the same elective pool, creating extensive cross-cohort overlap.
+        </div>
+      </div>
+      <div class="proof-step">
+        <div class="proof-num">2</div>
+        <div class="proof-text">
+          <strong>A clique of 17 sections was identified</strong> — 17 sections that ALL mutually conflict. No two members can ever share a time slot; each session requires its own dedicated slot.
+          <div class="proof-formula">Clique = {BMS-A, SMTI-A, DTI-A, BV-A, DWDV-A, DT-B, SDM-A, DMPA-B, IMC-A, EMPP-B, SCM-A, IMKT-B, CRM-B, PBM-B, CB-B, IMC-B, DSMM-B}</div>
+        </div>
+      </div>
+      <div class="proof-step">
+        <div class="proof-num">3</div>
+        <div class="proof-text">
+          <strong>Phase 2 weekly bottleneck:</strong> With 41 normal slots/week and 4 classrooms, the 17 clique members at 2 sessions/week consume 34 dedicated slots. Only 28 room-slots remain for 30 non-clique sections.
+          <div class="proof-formula">17 × 2 = 34 slots used → (41 − 34) × 4 = 28 room-slots remain &lt; 30 needed → INFEASIBLE</div>
+        </div>
+      </div>
+      <div class="proof-step">
+        <div class="proof-num">4</div>
+        <div class="proof-text">
+          <strong>Two solutions resolve this:</strong> Solution A reduces sessions to 18, lowering demand below the feasible threshold. Solution B extends the slot universe to 48/week by adding overflow slots, lifting room-slot availability to (48−34)×4 = 56 ≥ 30.
+          <div class="proof-formula">S=18: demand drops → feasible | S=20+overflow: 48 slots → 56 room-slots ≥ 30 → feasible</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:32px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+      <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:20px;text-align:center">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:44px;color:var(--red);line-height:1">8</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:6px">Failed Iterations</div>
+      </div>
+      <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:20px;text-align:center">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:44px;color:var(--gold2);line-height:1">19K+</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:6px">Binary Variables</div>
+      </div>
+      <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:20px;text-align:center">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:44px;color:var(--blue3);line-height:1">318K</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:6px">Constraint Relations</div>
+      </div>
+      <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:20px;text-align:center">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:44px;color:var(--purple3);line-height:1">NP</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:6px">Hard Problem Class</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CLIQUE -->
+<div id="clique" style="background:var(--paper);padding:60px 0">
+  <div style="max-width:1300px;margin:0 auto;padding:0 60px">
+    <div class="sec-eyebrow">Graph Theory Finding</div>
+    <h2 class="sec-title" style="color:var(--navy)">The 17-Section Conflict Clique</h2>
+    <p class="sec-body" style="color:var(--ink)">A clique is a set of nodes where every pair is connected. In scheduling terms: none of these 17 sections can ever share a time slot. They are the structural core of the infeasibility.</p>
+    <div style="margin-bottom:24px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:14px">Clique Members (17 sections — purple) vs. Non-Clique (30 sections — blue)</div>
+      <div class="clique-grid" id="cliqueGrid"></div>
+    </div>
+    <div class="charts-grid charts-2col" style="margin-top:32px">
+      <div class="chart-card">
+        <div class="chart-title">Phase 2 Room-Slot Budget</div>
+        <div class="chart-sub">As clique members each run 2 sessions/week in Phase 2</div>
+        <div id="budgetViz" style="margin-top:10px"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Overflow vs. Normal (Solution B)</div>
+        <div class="chart-sub">17 overflow sessions out of 940 total (1.8%)</div>
+        <div class="donut-wrap" id="overflowDonut" style="justify-content:center;padding-top:10px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FACULTY LOAD -->
+<div id="faculty" style="background:var(--navy2);padding:60px 0">
+  <div style="max-width:1300px;margin:0 auto;padding:0 60px">
+    <div class="sec-eyebrow" style="color:var(--gold2)">Resource Analysis</div>
+    <h2 class="sec-title">Faculty Teaching Load</h2>
+    <p class="sec-body">Three faculty members are critical-path constraints — their scheduling windows define the feasibility envelope of the entire timetable. Gold = critical path (&gt;40 sessions). Purple = has overflow sessions (Solution B).</p>
+    <div class="fac-heat" id="facHeat"></div>
+  </div>
+</div>
+
+<!-- WEEKLY DISTRIBUTION -->
+<div id="weekly" style="background:var(--navy);padding:60px 0">
+  <div style="max-width:1300px;margin:0 auto;padding:0 60px">
+    <div class="sec-eyebrow" style="color:var(--gold2)">Temporal Distribution</div>
+    <h2 class="sec-title">Week-by-Week Session Distribution</h2>
+    <p class="sec-body">Phase 1 (Weeks 1–4, 10 classrooms) carries more sessions per week. The Phase 2 transition at Week 5 is the single most consequential constraint — a 60% reduction in parallel scheduling capacity.</p>
+    <div class="charts-grid charts-2col">
+      <div class="chart-card dark">
+        <div class="chart-title">Solution A — 846 Sessions</div>
+        <div class="chart-sub">18 sessions per course · Normal hours only</div>
+        <div class="spark-row" id="sparkV6"></div>
+        <div class="tl-legend" style="margin-top:16px">
+          <div style="display:flex;align-items:center;gap:6px"><div class="tl-dot" style="background:#1D4ED8"></div><span style="font-size:11px;color:rgba(255,255,255,.6)">Phase 1 (10 rooms)</span></div>
+          <div style="display:flex;align-items:center;gap:6px"><div class="tl-dot" style="background:#D97706"></div><span style="font-size:11px;color:rgba(255,255,255,.6)">Phase 2 (4 rooms)</span></div>
+        </div>
+      </div>
+      <div class="chart-card dark">
+        <div class="chart-title">Solution B — 940 Sessions</div>
+        <div class="chart-sub">20 sessions per course · With overflow</div>
+        <div class="spark-row" id="sparkV8"></div>
+        <div class="tl-legend" style="margin-top:16px">
+          <div style="display:flex;align-items:center;gap:6px"><div class="tl-dot" style="background:#1D4ED8"></div><span style="font-size:11px;color:rgba(255,255,255,.6)">Phase 1</span></div>
+          <div style="display:flex;align-items:center;gap:6px"><div class="tl-dot" style="background:#D97706"></div><span style="font-size:11px;color:rgba(255,255,255,.6)">Phase 2</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLOT DISTRIBUTION -->
+<div id="slots" style="background:var(--paper);padding:60px 0">
+  <div style="max-width:1300px;margin:0 auto;padding:0 60px">
+    <div class="sec-eyebrow">Time Slot Analysis</div>
+    <h2 class="sec-title" style="color:var(--navy)">Session Distribution by Time &amp; Day</h2>
+    <p class="sec-body" style="color:var(--ink)">The optimizer's morning preference goal (G2, weight 30) drives ~58% of sessions into the 09:00–12:30 window. Day distribution is near-uniform by design, with Sunday slightly lower due to the restricted slot count.</p>
+    <div class="charts-grid charts-2col">
+      <div class="chart-card">
+        <div class="chart-title">Sessions by Time Slot — Both Solutions</div>
+        <div class="chart-sub">Blue = Solution A · Purple = Solution B overflow slots visible</div>
+        <div class="bar-chart" id="slotChart"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Sessions by Day of Week</div>
+        <div class="chart-sub">Solution A vs Solution B — Sunday is lower due to restricted slots</div>
+        <div class="bar-chart" id="dayChart"></div>
+      </div>
+    </div>
+    <div style="margin-top:24px;padding:28px;background:#fff;border-radius:12px;border:1px solid var(--rule)">
+      <div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--navy);margin-bottom:16px">Methodology: 6-Layer Optimization Framework</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px" id="methodGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer style="background:var(--navy2);border-top:3px solid var(--gold);padding:40px 60px;text-align:center">
+  <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:.06em;color:var(--gold2);margin-bottom:8px">OPTIMA</div>
+  <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3)">
+    IIM Ranchi · MBA Timetable Optimizer · CP-SAT + Goal Programming · WAI Assignment · Term 3, 2026
+  </div>
+</footer>
+
+<script>
+const DD = {"courses":[{"code":"FIS","name":"Fixed Income Securities","faculty":"Prof. Prasenjit Chakrabarti","enrollment":114,"split":"YES"},{"code":"IM","name":"Investment Management","faculty":"Prof. Anand","enrollment":109,"split":"YES"},{"code":"BV","name":"Business Valuation","faculty":"Prof. Anand","enrollment":53,"split":"No"},{"code":"DRV","name":"Derivatives","faculty":"Prof. Kamran Kuddus","enrollment":72,"split":"YES"},{"code":"DMPA","name":"Data Mining & Predictive Analytics","faculty":"Prof. Pradip Kumar Bala","enrollment":93,"split":"YES"},{"code":"DWDV","name":"Data Warehousing & Data Visualization","faculty":"Prof. Anupriya Khan","enrollment":70,"split":"No"},{"code":"DT","name":"Digital Transformation Sec A","faculty":"Prof. Arindam Mukherjee","enrollment":110,"split":"YES"},{"code":"IMKT","name":"International Marketing","faculty":"Prof. Dipanjan Kumar Dey","enrollment":124,"split":"YES"},{"code":"PBM","name":"Product & Brand Management","faculty":"Prof. Aditya Shankar Mishra","enrollment":140,"split":"YES"},{"code":"SDM","name":"Sales & Distribution Management Sec A","faculty":"Prof. Shibashish Chakraborty","enrollment":139,"split":"YES"},{"code":"CB","name":"Consumer Behavior","faculty":"Prof. M. Jyotsna Soni","enrollment":111,"split":"YES"},{"code":"CRM","name":"Customer Relationship Management","faculty":"Prof. Ankur Jha","enrollment":133,"split":"YES"},{"code":"DSMM","name":"Digital & Social Media Marketing Sec A","faculty":"Prof. Subhro Sarkar","enrollment":140,"split":"YES"},{"code":"IMC","name":"Integrated Marketing Communication","faculty":"Prof. T. Sai Vijay","enrollment":122,"split":"YES"},{"code":"PRI","name":"Pricing","faculty":"Prof. Shweta Jha","enrollment":96,"split":"YES"},{"code":"REE","name":"Reigniting Employee Engagement","faculty":"Prof. Rakhi Singh","enrollment":69,"split":"No"},{"code":"EMPP","name":"Empowering Managers through Positive Psy","faculty":"Prof. Rajasekhar David","enrollment":97,"split":"YES"},{"code":"NCM","name":"Negotiation & Conflict Management","faculty":"Prof. Manish Kumar","enrollment":68,"split":"No"},{"code":"GMRM","name":"Global Human Resource Management","faculty":"Prof. Piyali Ghosh","enrollment":66,"split":"No"},{"code":"ODC","name":"Organization Development & Change","faculty":"Prof. Viraj Varma","enrollment":71,"split":"YES"},{"code":"SCM","name":"Supply Chain Management","faculty":"Prof. Pritee Ray","enrollment":82,"split":"YES"},{"code":"PM","name":"Project Management","faculty":"Prof. Vijaya Dixit","enrollment":92,"split":"YES"},{"code":"BMS","name":"Business Model Strategy","faculty":"Prof. Santosh Kumar Prusty","enrollment":48,"split":"No"},{"code":"SMTI","name":"Strategic Management of Technological In","faculty":"Prof. Shiwangi Singh","enrollment":64,"split":"No"},{"code":"CCS","name":"Cooperative & Competitive Strategies","faculty":"Prof. Rohit Kumar","enrollment":113,"split":"YES"},{"code":"DTI","name":"Design Thinking & Innovation","faculty":"Prof. Rohit Kumar (Premid) + P","enrollment":103,"split":"YES"},{"code":"CS","name":"Corporate Strategy","faculty":"Prof. Swarup Kumar Dutta","enrollment":129,"split":"YES"}],"faculty_load_v6":{"Prof. Rajasekhar David":{"sessions":36,"sections":["EMPP-B","EMPP-A"],"overflow":0},"Prof. Prasenjit Chakrabarti":{"sessions":36,"sections":["FIS-B","FIS-A"],"overflow":0},"Prof. Dipanjan Kumar Dey":{"sessions":36,"sections":["IMKT-A","IMKT-B"],"overflow":0},"Prof. Pradip Kumar Bala":{"sessions":36,"sections":["DMPA-B","DMPA-A"],"overflow":0},"Prof. Rakhi Singh":{"sessions":18,"sections":["REE-A"],"overflow":0},"Prof. Anand":{"sessions":54,"sections":["BV-A","IM-A","IM-B"],"overflow":0},"Prof. Rohit Kumar":{"sessions":57,"sections":["DTI-B","CCS-B","CCS-A","DTI-A"],"overflow":0},"Prof. Ankur Jha":{"sessions":36,"sections":["CRM-B","CRM-A"],"overflow":0},"Prof. Shibashish Chakraborty":{"sessions":36,"sections":["SDM-A","SDM-B"],"overflow":0},"Prof. M. Jyotsna Soni":{"sessions":36,"sections":["CB-A","CB-B"],"overflow":0},"Prof. Subhro Sarkar":{"sessions":36,"sections":["DSMM-B","DSMM-A"],"overflow":0},"Prof. Viraj Varma":{"sessions":36,"sections":["ODC-B","ODC-A"],"overflow":0},"Prof. Aditya Shankar Mishra":{"sessions":36,"sections":["PBM-A","PBM-B"],"overflow":0},"Prof. Shweta Jha":{"sessions":36,"sections":["PRI-B","PRI-A"],"overflow":0},"Prof. Kamran Kuddus":{"sessions":36,"sections":["DRV-B","DRV-A"],"overflow":0},"Prof. Arindam Mukherjee":{"sessions":36,"sections":["DT-B","DT-A"],"overflow":0},"Prof. Swarup Kumar Dutta":{"sessions":36,"sections":["CS-A","CS-B"],"overflow":0},"Prof. T. Sai Vijay":{"sessions":36,"sections":["IMC-A","IMC-B"],"overflow":0},"Prof. Shiwangi Singh":{"sessions":18,"sections":["SMTI-A"],"overflow":0},"Prof. Vijaya Dixit":{"sessions":36,"sections":["PM-A","PM-B"],"overflow":0},"Prof. Anupriya Khan":{"sessions":18,"sections":["DWDV-A"],"overflow":0},"Prof. Piyali Ghosh":{"sessions":18,"sections":["GMRM-A"],"overflow":0},"Prof. Pritee Ray":{"sessions":36,"sections":["SCM-A","SCM-B"],"overflow":0},"Prof. Manish Kumar":{"sessions":18,"sections":["NCM-A"],"overflow":0},"Prof. Santosh Kumar Prusty":{"sessions":18,"sections":["BMS-A"],"overflow":0},"Prof. Rojers Puthur Josrph":{"sessions":15,"sections":["DTI-B","DTI-A"],"overflow":0}},"faculty_load_v8":{"Prof. Rajasekhar David":{"sessions":40,"sections":["EMPP-B","EMPP-A"],"overflow":0},"Prof. Anand":{"sessions":60,"sections":["BV-A","IM-A","IM-B"],"overflow":0},"Prof. Pritee Ray":{"sessions":40,"sections":["SCM-A","SCM-B"],"overflow":1},"Prof. Subhro Sarkar":{"sessions":40,"sections":["DSMM-B","DSMM-A"],"overflow":0},"Prof. Viraj Varma":{"sessions":40,"sections":["ODC-B","ODC-A"],"overflow":0},"Prof. M. Jyotsna Soni":{"sessions":40,"sections":["CB-A","CB-B"],"overflow":0},"Prof. T. Sai Vijay":{"sessions":40,"sections":["IMC-A","IMC-B"],"overflow":0},"Prof. Rohit Kumar":{"sessions":59,"sections":["CCS-A","CCS-B","DTI-B","DTI-A"],"overflow":1},"Prof. Santosh Kumar Prusty":{"sessions":20,"sections":["BMS-A"],"overflow":1},"Prof. Ankur Jha":{"sessions":40,"sections":["CRM-B","CRM-A"],"overflow":0},"Prof. Aditya Shankar Mishra":{"sessions":40,"sections":["PBM-A","PBM-B"],"overflow":0},"Prof. Arindam Mukherjee":{"sessions":40,"sections":["DT-B","DT-A"],"overflow":6},"Prof. Dipanjan Kumar Dey":{"sessions":40,"sections":["IMKT-A","IMKT-B"],"overflow":0},"Prof. Pradip Kumar Bala":{"sessions":40,"sections":["DMPA-B","DMPA-A"],"overflow":0},"Prof. Piyali Ghosh":{"sessions":20,"sections":["GMRM-A"],"overflow":0},"Prof. Kamran Kuddus":{"sessions":40,"sections":["DRV-B","DRV-A"],"overflow":0},"Prof. Vijaya Dixit":{"sessions":40,"sections":["PM-A","PM-B"],"overflow":0},"Prof. Shiwangi Singh":{"sessions":20,"sections":["SMTI-A"],"overflow":2},"Prof. Prasenjit Chakrabarti":{"sessions":40,"sections":["FIS-B","FIS-A"],"overflow":0},"Prof. Shibashish Chakraborty":{"sessions":40,"sections":["SDM-A","SDM-B"],"overflow":5},"Prof. Swarup Kumar Dutta":{"sessions":40,"sections":["CS-A","CS-B"],"overflow":0},"Prof. Manish Kumar":{"sessions":20,"sections":["NCM-A"],"overflow":0},"Prof. Shweta Jha":{"sessions":40,"sections":["PRI-B","PRI-A"],"overflow":0},"Prof. Anupriya Khan":{"sessions":20,"sections":["DWDV-A"],"overflow":0},"Prof. Rakhi Singh":{"sessions":20,"sections":["REE-A"],"overflow":0},"Prof. Rojers Puthur Josrph":{"sessions":21,"sections":["DTI-B","DTI-A"],"overflow":1}},"week_dist_v6":{"1":81,"2":86,"3":84,"4":84,"5":86,"6":84,"7":87,"8":84,"9":88,"10":82},"week_dist_v8":{"1":92,"2":95,"3":99,"4":90,"5":94,"6":94,"7":97,"8":93,"9":94,"10":92},"phase_v6":{"P1":335,"P2":511},"phase_v8":{"P1":376,"P2":564},"slot_dist_v6":{"Morning (09:00)":212,"Morning (10:45)":174,"Morning (12:30)":158,"Afternoon (14:15)":144,"Afternoon (16:00)":114,"Evening (17:45)":44},"slot_dist_v8":{"Morning (09:00)":231,"Morning (10:45)":186,"Morning (12:30)":155,"Afternoon (14:15)":145,"Afternoon (16:00)":133,"Evening (17:45)":80,"OVERFLOW (19:30)":10},"day_dist_v6":{"Monday":120,"Tuesday":123,"Wednesday":122,"Thursday":122,"Friday":123,"Saturday":124,"Sunday":112},"day_dist_v8":{"Monday":128,"Tuesday":132,"Wednesday":140,"Thursday":139,"Friday":133,"Saturday":142,"Sunday":126},"clique":["BMS-A","SMTI-A","DTI-A","BV-A","DWDV-A","DT-B","SDM-A","DMPA-B","IMC-A","EMPP-B","SCM-A","IMKT-B","CRM-B","PBM-B","CB-B","IMC-B","DSMM-B"],"summary":{"total_courses":27,"total_sections":47,"total_students":2600,"conflict_pairs":773,"conflict_density":71.5,"num_faculty":25,"v6_sessions":846,"v8_sessions":940,"v8_overflow":17,"phase1_rooms":10,"phase2_rooms":4}};
+
+// ── ENROLLMENT CHART ─────────────────────────────────────────────────────────
+const enrollEl = document.getElementById('enrollChart');
+const sorted = [...DD.courses].sort((a,b)=>b.enrollment-a.enrollment).slice(0,15);
+const maxE = sorted[0].enrollment;
+enrollEl.innerHTML = sorted.map(c=>{
+  const pct = (c.enrollment/maxE*100).toFixed(1);
+  const col = c.enrollment>70 ? '#DC2626' : '#1D4ED8';
+  const name = c.code;
+  return `<div class="bar-row">
+    <span class="bar-label" title="${c.course}">${name}</span>
+    <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${col}">
+      <span class="bar-val">${c.enrollment}</span>
+    </div></div>
+  </div>`;
+}).join('');
+
+// ── SPLIT DONUT ──────────────────────────────────────────────────────────────
+const splitEl = document.getElementById('splitDonut');
+const splits = DD.courses.filter(c=>c.split==='YES').length;
+const noSplit = DD.courses.length - splits;
+splitEl.innerHTML = buildDonut(
+  [splits, noSplit],
+  ['#DC2626','#1D4ED8'],
+  ['Split (2 sections)','Single section'],
+  [splits+' courses',noSplit+' courses'],
+  120
+);
+
+// ── KEY FACTS ────────────────────────────────────────────────────────────────
+document.getElementById('keyFacts').innerHTML = [
+  ['47 total sections after splitting','27 courses → 47 schedulable sections'],
+  ['773 conflict pairs detected','71.5% conflict density — exceptionally high'],
+  ['BMS-A conflicts with all 46 others','Universal conflict — structural scheduling challenge'],
+  ['3 critical-path faculty','Prof. Anand (3 sec), Prof. Rohit Kumar (4 sec), Prof. T. Sai Vijay (2 sec)'],
+].map(([title,sub])=>`<div style="display:flex;gap:12px;padding:10px;background:var(--cream);border-radius:6px;align-items:flex-start">
+  <div style="width:6px;height:6px;border-radius:50%;background:var(--navy);margin-top:6px;flex-shrink:0"></div>
+  <div><div style="font-size:12px;font-weight:600;color:var(--navy)">${title}</div><div style="font-size:11px;color:var(--rule);margin-top:2px">${sub}</div></div>
+</div>`).join('');
+
+// ── CLIQUE GRID ──────────────────────────────────────────────────────────────
+const cliqueEl = document.getElementById('cliqueGrid');
+const allSections = [...new Set(Object.keys(DD.faculty_load_v8).flatMap(f=>DD.faculty_load_v8[f].sections))].sort();
+// Use the known 47 sections
+const knownSections = [];
+DD.courses.forEach(c=>{
+  if(c.split==='YES'){knownSections.push(c.code+'-A');knownSections.push(c.code+'-B');}
+  else knownSections.push(c.code+'-A');
+});
+const cliqueSet = new Set(DD.clique);
+cliqueEl.innerHTML = knownSections.sort().map(s=>
+  `<span class="clique-tag ${cliqueSet.has(s)?'clique-member':'clique-normal'}">${s}</span>`
+).join('');
+
+// ── BUDGET VIZ ───────────────────────────────────────────────────────────────
+const budgetEl = document.getElementById('budgetViz');
+budgetEl.innerHTML = `
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <div><div style="font-size:11px;color:var(--rule);margin-bottom:4px">Total Phase 2 weekly slots (normal)</div>
+    <div style="height:28px;background:#F3F4F6;border-radius:4px;overflow:hidden;display:flex">
+      <div style="width:${(34/41*100).toFixed(0)}%;background:#DC2626;display:flex;align-items:center;padding-left:8px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#fff;font-weight:700">34 clique slots</span>
+      </div>
+      <div style="flex:1;display:flex;align-items:center;padding-left:6px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--rule)">7 remaining</span>
+      </div>
+    </div></div>
+    <div><div style="font-size:11px;color:var(--rule);margin-bottom:4px">Room-slots available for 30 non-clique sections</div>
+    <div style="height:28px;background:#F3F4F6;border-radius:4px;overflow:hidden;display:flex">
+      <div style="width:${(28/30*100).toFixed(0)}%;background:#D97706;display:flex;align-items:center;padding-left:8px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#fff;font-weight:700">28 available</span>
+      </div>
+      <div style="flex:1;background:#DC2626;display:flex;align-items:center;padding-left:6px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#fff">−2 deficit</span>
+      </div>
+    </div></div>
+    <div style="padding:12px;background:#FEE2E2;border-radius:6px;border-left:3px solid #DC2626">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#DC2626;font-weight:700">28 AVAILABLE &lt; 30 NEEDED = INFEASIBLE</div>
+      <div style="font-size:11px;color:var(--rule);margin-top:4px">This deficit of 2 per week × 6 Phase 2 weeks = 12 sessions cannot be placed</div>
+    </div>
+    <div style="padding:12px;background:#D1FAE5;border-radius:6px;border-left:3px solid #059669">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#065F46;font-weight:700">Solution B: 48 slots → (48−34)×4 = 56 ≥ 30 ✓ FEASIBLE</div>
+    </div>
+  </div>`;
+
+// ── OVERFLOW DONUT ───────────────────────────────────────────────────────────
+document.getElementById('overflowDonut').innerHTML = buildDonut(
+  [923, 17],[' #1D4ED8','#6D28D9'],
+  ['Normal Sessions','Overflow Sessions'],
+  ['923 (98.2%)','17 (1.8%)'],110
+);
+
+// ── FACULTY HEAT ─────────────────────────────────────────────────────────────
+const facEl = document.getElementById('facHeat');
+const fl = Object.entries(DD.faculty_load_v8).sort((a,b)=>b[1].sessions-a[1].sessions);
+const maxSess = fl[0][1].sessions;
+facEl.innerHTML = fl.map(([name,d])=>{
+  const isCritical = d.sessions>40;
+  const hasOvfl = d.overflow>0;
+  const cls = isCritical?'critical':hasOvfl?'overflow':'';
+  const barColor = isCritical?'#F5C842':hasOvfl?'#8B5CF6':'#3B82F6';
+  const pct = (d.sessions/maxSess*100).toFixed(0);
+  return `<div class="fac-row ${cls}">
+    <span class="fac-name" title="${name}">${name.replace('Prof. ','')}</span>
+    <div class="fac-bar-mini"><div class="fac-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+    <span class="fac-num">${d.sessions}</span>
+    ${hasOvfl?`<span style="font-family:'JetBrains Mono',monospace;font-size:8px;background:rgba(109,40,217,.2);color:#C4B5FD;padding:2px 6px;border-radius:3px;flex-shrink:0">OVF</span>`:''}
+  </div>`;
+}).join('');
+
+// ── WEEKLY SPARKS ─────────────────────────────────────────────────────────────
+function buildSpark(elId, weekDist){
+  const el = document.getElementById(elId);
+  const max = Math.max(...Object.values(weekDist));
+  el.innerHTML = Object.entries(weekDist).sort((a,b)=>+a[0]-+b[0]).map(([w,v])=>{
+    const h = Math.max(10, (v/max*64)).toFixed(0);
+    const isP2 = +w > 4;
+    return `<div class="spark-col">
+      <div class="spark-val">${v}</div>
+      <div class="spark-bar" style="height:${h}px;background:${isP2?'#D97706':'#3B82F6'}"></div>
+      <div class="spark-label">W${w}</div>
+    </div>`;
+  }).join('');
+}
+buildSpark('sparkV6', DD.week_dist_v6);
+buildSpark('sparkV8', DD.week_dist_v8);
+
+// ── SLOT CHART ────────────────────────────────────────────────────────────────
+const slotEl = document.getElementById('slotChart');
+const slots = ['Morning (09:00)','Morning (10:45)','Morning (12:30)','Afternoon (14:15)','Afternoon (16:00)','Evening (17:45)'];
+const maxSlot = Math.max(...slots.map(s=>Math.max(DD.slot_dist_v6[s]||0, DD.slot_dist_v8[s]||0)));
+slotEl.innerHTML = slots.map(s=>{
+  const v6v = DD.slot_dist_v6[s]||0;
+  const v8v = DD.slot_dist_v8[s]||0;
+  const label = s.replace(' (09:00)','').replace(' (10:45)','').replace(' (12:30)','').replace(' (14:15)','').replace(' (16:00)','').replace(' (17:45)','');
+  return `<div style="margin-bottom:10px">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--rule);margin-bottom:4px">${label}</div>
+    <div class="bar-row" style="margin-bottom:3px">
+      <span class="bar-label" style="font-size:9px;color:var(--rule);width:22px">A</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${(v6v/maxSlot*100).toFixed(1)}%;background:#1D4ED8">
+        <span class="bar-val" style="font-size:9px">${v6v}</span></div></div>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label" style="font-size:9px;color:var(--rule);width:22px">B</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${(v8v/maxSlot*100).toFixed(1)}%;background:#6D28D9">
+        <span class="bar-val" style="font-size:9px">${v8v}</span></div></div>
+    </div>
+  </div>`;
+}).join('') + `<div style="margin-top:8px;padding:10px;background:var(--purple4);border-radius:6px;border-left:3px solid var(--purple)">
+  <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--purple);font-weight:700">OVERFLOW (19:30–21:00)</div>
+  <div style="font-size:11px;color:var(--rule);margin-top:2px">Solution B only: 10 weekday + 7 Sunday = 17 overflow sessions</div>
+</div>`;
+
+// ── DAY CHART ─────────────────────────────────────────────────────────────────
+const dayEl = document.getElementById('dayChart');
+const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const maxDay = Math.max(...days.flatMap(d=>[DD.day_dist_v6[d],DD.day_dist_v8[d]]));
+dayEl.innerHTML = days.map(d=>{
+  const v6v = DD.day_dist_v6[d]||0;
+  const v8v = DD.day_dist_v8[d]||0;
+  return `<div style="margin-bottom:10px">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--rule);margin-bottom:4px">${d.slice(0,3)}</div>
+    <div class="bar-row" style="margin-bottom:3px">
+      <span class="bar-label" style="font-size:9px;color:var(--rule);width:22px">A</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${(v6v/maxDay*100).toFixed(1)}%;background:#1D4ED8">
+        <span class="bar-val" style="font-size:9px">${v6v}</span></div></div>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label" style="font-size:9px;color:var(--rule);width:22px">B</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${(v8v/maxDay*100).toFixed(1)}%;background:#6D28D9">
+        <span class="bar-val" style="font-size:9px">${v8v}</span></div></div>
+    </div>
+  </div>`;
+}).join('');
+
+// ── METHOD GRID ───────────────────────────────────────────────────────────────
+document.getElementById('methodGrid').innerHTML = [
+  ['01','ILP Formulation','19,270 binary variables, 5 hard constraints (C1–C5)','#1D4ED8'],
+  ['02','CP-SAT Solver','Google OR-Tools with CDCL — 8 parallel workers','#0369A1'],
+  ['03','Goal Programming','G0–G3 weighted objectives: spread, morning pref, welfare','#B45309'],
+  ['04','Transportation Model','Classroom tier fit scoring — section → room assignment','#065F46'],
+  ['05','Decision Tree','Enrollment-based split logic + phase transition rules','#6D28D9'],
+  ['06','Monte Carlo','500 iterations, 5% absence rate, ±10% enrollment fluctuation','#DC2626'],
+].map(([n,title,desc,col])=>`<div style="padding:16px;background:var(--cream);border-radius:8px;border-left:3px solid ${col}">
+  <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:${col};line-height:1;margin-bottom:4px">${n}</div>
+  <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px">${title}</div>
+  <div style="font-size:11px;color:var(--rule);line-height:1.5">${desc}</div>
+</div>`).join('');
+
+// ── DONUT HELPER ─────────────────────────────────────────────────────────────
+function buildDonut(values, colors, labels, valLabels, r){
+  const total = values.reduce((a,b)=>a+b,0);
+  const cx=r, cy=r, R=r*0.72, inner=r*0.42;
+  let angle = -Math.PI/2;
+  let paths = '';
+  values.forEach((v,i)=>{
+    const sweep = (v/total)*Math.PI*2;
+    const x1=cx+R*Math.cos(angle), y1=cy+R*Math.sin(angle);
+    const x2=cx+R*Math.cos(angle+sweep), y2=cy+R*Math.sin(angle+sweep);
+    const xi1=cx+inner*Math.cos(angle), yi1=cy+inner*Math.sin(angle);
+    const xi2=cx+inner*Math.cos(angle+sweep), yi2=cy+inner*Math.sin(angle+sweep);
+    const large=sweep>Math.PI?1:0;
+    paths+=`<path d="M ${xi1} ${yi1} L ${x1} ${y1} A ${R} ${R} 0 ${large} 1 ${x2} ${y2} L ${xi2} ${yi2} A ${inner} ${inner} 0 ${large} 0 ${xi1} ${yi1} Z" fill="${colors[i]}" opacity="0.9"/>`;
+    angle+=sweep;
+  });
+  const legend = labels.map((l,i)=>`<div class="donut-item">
+    <div class="donut-dot" style="background:${colors[i]}"></div>
+    <span class="donut-item-label">${l}</span>
+    <span class="donut-item-val">${valLabels[i]}</span>
+  </div>`).join('');
+  return `<div class="donut-wrap"><svg width="${r*2}" height="${r*2}" class="donut-svg">${paths}</svg><div class="donut-legend">${legend}</div></div>`;
+}
+</script>
+</body></html>
